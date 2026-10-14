@@ -1,0 +1,138 @@
+// Owner: Sujeet. STARTER covering tables 1-8 of the guide (not yet run against a real database).
+// First step: run `npx prisma validate`, fix anything it reports, then add the remaining tables:
+// ApprovalAuthority, Attachment, PoExtension, Reminder, AuditLog.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  registrar
+  hod
+  indenter
+  acc_top
+  acc_mid
+  acc_low
+  pur_top
+  pur_mid
+  pur_low
+}
+
+enum UserStatus {
+  pending
+  active
+  blocked
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  name         String
+  email        String     @unique
+  passwordHash String?
+  role         Role       @default(indenter)
+  designation  String?
+  departmentId Int?
+  department   ListItem?  @relation(fields: [departmentId], references: [id])
+  status       UserStatus @default(pending)
+  createdAt    DateTime   @default(now())
+  created      Indent[]   @relation("Creator")
+  holding      Indent[]   @relation("Holder")
+}
+
+model ListItem {
+  id    Int    @id @default(autoincrement())
+  list  String
+  value String
+  users User[]
+
+  @@unique([list, value])
+}
+
+model FormTemplate {
+  id           Int      @id @default(autoincrement())
+  code         String
+  version      Int      @default(1)
+  name         String
+  workflowCode String
+  limit        Json?
+  sections     Json
+  active       Boolean  @default(true)
+  indents      Indent[]
+
+  @@unique([code, version])
+}
+
+model WorkflowTemplate {
+  id      Int      @id @default(autoincrement())
+  code    String
+  version Int      @default(1)
+  steps   Json
+  indents Indent[]
+
+  @@unique([code, version])
+}
+
+model FormLimit {
+  id            Int      @id @default(autoincrement())
+  formCode      String
+  rule          String
+  amount        Decimal  @db.Decimal(12, 2)
+  effectiveFrom DateTime
+  reason        String?
+  createdById   Int
+  createdAt     DateTime @default(now())
+
+  @@index([formCode, rule, effectiveFrom])
+}
+
+model Indent {
+  id             Int              @id @default(autoincrement())
+  number         String           @unique
+  formTemplateId Int
+  formTemplate   FormTemplate     @relation(fields: [formTemplateId], references: [id])
+  workflowId     Int
+  workflow       WorkflowTemplate @relation(fields: [workflowId], references: [id])
+  createdById    Int
+  createdBy      User             @relation("Creator", fields: [createdById], references: [id])
+  holderId       Int?
+  holder         User?            @relation("Holder", fields: [holderId], references: [id])
+  stage          String
+  data           Json
+  total          Decimal          @db.Decimal(12, 2)
+  limitApplied   Decimal          @db.Decimal(12, 2)
+  version        Int              @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  history        IndentHistory[]
+  order          PurchaseOrder?
+}
+
+model IndentHistory {
+  id        Int      @id @default(autoincrement())
+  indentId  Int
+  indent    Indent   @relation(fields: [indentId], references: [id])
+  actorId   Int
+  action    String
+  fromStage String
+  toStage   String
+  remark    String?
+  at        DateTime @default(now())
+}
+
+model PurchaseOrder {
+  id        Int      @id @default(autoincrement())
+  indentId  Int      @unique
+  indent    Indent   @relation(fields: [indentId], references: [id])
+  poNumber  String   @unique
+  vendor    String
+  orderDate DateTime
+  dueDate   DateTime
+  status    String   @default("ongoing")
+  data      Json?
+}

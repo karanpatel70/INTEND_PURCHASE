@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* Brand colours (same as the prototype). Use them as bg-brand, text-ink, bg-mint ... */
+@theme {
+  --color-ink: #14261e;
+  --color-brand: #2f7a5a;
+  --color-mint: #edf3ef;
+  --color-line: #c9d6ce;
+  --color-warn: #e8a317;
+  --font-sans: "Inter", system-ui, sans-serif;
+}

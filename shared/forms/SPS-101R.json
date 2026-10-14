@@ -1,0 +1,299 @@
+{
+  "code": "SPS-101(R)",
+  "version": 1,
+  "name": "SPS-101(R): Scientific equipment and consumables up to Rs. 2 lakh",
+  "workflowCode": "standard",
+  "limit": {
+    "amountField": "total",
+    "defaultRule": "all"
+  },
+  "sections": [
+    {
+      "key": "indenter",
+      "title": "Indenter and item details",
+      "filledBy": "indenter",
+      "fields": [
+        {
+          "name": "budgetHead",
+          "label": "Budget head",
+          "type": "select",
+          "required": true,
+          "optionsFrom": "budgetHead"
+        },
+        {
+          "name": "sanctioned",
+          "label": "Sanctioned budget (₹)",
+          "type": "number",
+          "required": true,
+          "min": 0
+        },
+        {
+          "name": "title",
+          "label": "Name of the item",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. 24-port network switch"
+        },
+        {
+          "name": "cat",
+          "label": "Category",
+          "type": "radio",
+          "required": true,
+          "options": [
+            "Consumables",
+            "LTA",
+            "Non-consumables"
+          ]
+        },
+        {
+          "name": "purpose",
+          "label": "Purpose",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Why is this purchase needed?"
+        },
+        {
+          "name": "approvalEnclosed",
+          "label": "Budgetary approval enclosed",
+          "type": "radio",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "name": "space",
+          "label": "Space ready for installation",
+          "type": "radio",
+          "required": true,
+          "options": [
+            "Yes",
+            "No",
+            "NA"
+          ]
+        },
+        {
+          "name": "install",
+          "label": "Installation by the supplier",
+          "type": "radio",
+          "required": true,
+          "options": [
+            "Required",
+            "Not required"
+          ]
+        },
+        {
+          "name": "gem",
+          "label": "GeM purchase",
+          "type": "radio",
+          "required": true,
+          "options": [
+            "Yes",
+            "No"
+          ]
+        },
+        {
+          "name": "gemReason",
+          "label": "If the item is available on GeM, reason for non-GeM purchase",
+          "type": "textarea",
+          "required": true,
+          "showIf": {
+            "field": "gem",
+            "equals": "No"
+          }
+        },
+        {
+          "name": "country",
+          "label": "Country of origin mentioned in the quotation",
+          "type": "text",
+          "required": true,
+          "showIf": {
+            "field": "gem",
+            "equals": "No"
+          }
+        },
+        {
+          "name": "cname",
+          "label": "Consignee name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "caddr",
+          "label": "Delivery address",
+          "type": "text",
+          "required": true,
+          "placeholder": "Room, building, department"
+        },
+        {
+          "name": "modes",
+          "label": "Mode of enquiry",
+          "type": "checkboxes",
+          "required": true,
+          "options": [
+            "Telephone",
+            "E-mail",
+            "Spot visit",
+            "Vendor’s website",
+            "GeM"
+          ]
+        },
+        {
+          "name": "nq",
+          "label": "Quotations received",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "name": "qno",
+          "label": "Quotation no.",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "qdate",
+          "label": "Quotation date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "vendor",
+          "label": "Recommended vendor (M/s)",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "items",
+          "label": "Items",
+          "type": "items-table",
+          "required": true,
+          "columns": [
+            {
+              "name": "desc",
+              "label": "Description",
+              "type": "text"
+            },
+            {
+              "name": "qty",
+              "label": "Qty",
+              "type": "number"
+            },
+            {
+              "name": "rate",
+              "label": "Rate (₹)",
+              "type": "number"
+            }
+          ],
+          "taxField": "tax",
+          "defaultTax": 18,
+          "calc": "itemsTotal",
+          "totalField": "total"
+        },
+        {
+          "name": "pay",
+          "label": "Recommended mode of payment",
+          "type": "text",
+          "required": true,
+          "default": "100% against delivery"
+        },
+        {
+          "name": "delivery",
+          "label": "Delivery period",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g. 3 weeks from PO"
+        },
+        {
+          "name": "decl",
+          "label": "I am personally satisfied that these goods are of the required quality and specification, and are bought from a reliable supplier at a reasonable price.",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "name": "docs",
+          "label": "Supporting documents (quotation, specification)",
+          "type": "file",
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "accounts",
+      "title": "Accounts section",
+      "filledBy": "accounts",
+      "fields": [
+        {
+          "name": "head",
+          "label": "Budget head",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "sanctioned",
+          "label": "Budget sanctioned (₹)",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "available",
+          "label": "Budget available (₹)",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "booked",
+          "label": "Budget booked (₹)",
+          "type": "number",
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "purchase",
+      "title": "Purchase section",
+      "filledBy": "purchase",
+      "fields": [
+        {
+          "name": "quote",
+          "label": "Quotation is signed by the indenter",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "name": "calc",
+          "label": "Calculations are checked and found in order",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "name": "order",
+          "label": "Purchase proposal is in order",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "name": "pagesFrom",
+          "label": "Proposal pages: from page",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "name": "pagesTo",
+          "label": "Proposal pages: to page",
+          "type": "number",
+          "required": true,
+          "min": 1
+        },
+        {
+          "name": "cfa",
+          "label": "Financial sanction sought (₹)",
+          "type": "number",
+          "required": true
+        }
+      ]
+    }
+  ]
+}

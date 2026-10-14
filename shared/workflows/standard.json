@@ -1,0 +1,154 @@
+{
+  "code": "standard",
+  "version": 1,
+  "note": "STARTER. Karan: check every step against the v9 prototype before relying on it.",
+  "steps": [
+    {
+      "key": "DRAFT",
+      "role": "indenter",
+      "actions": [
+        "submit",
+        "cancel"
+      ],
+      "next": "HOD"
+    },
+    {
+      "key": "HOD",
+      "role": "hod",
+      "actions": [
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "next": "A_TOP"
+    },
+    {
+      "key": "A_TOP",
+      "role": "acc_top",
+      "actions": [
+        "fill",
+        "forward",
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "accounts",
+      "forwardTo": "A_MID",
+      "skipTo": "A_LOW",
+      "next": "P_TOP"
+    },
+    {
+      "key": "A_MID",
+      "role": "acc_mid",
+      "actions": [
+        "fill",
+        "forward",
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "accounts",
+      "forwardTo": "A_LOW",
+      "next": "P_TOP"
+    },
+    {
+      "key": "A_LOW",
+      "role": "acc_low",
+      "actions": [
+        "fill",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "accounts",
+      "returnTo": "A_MID"
+    },
+    {
+      "key": "P_TOP",
+      "role": "pur_top",
+      "actions": [
+        "fill",
+        "forward",
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "purchase",
+      "forwardTo": "P_MID",
+      "skipTo": "P_LOW",
+      "next": "FINAL"
+    },
+    {
+      "key": "P_MID",
+      "role": "pur_mid",
+      "actions": [
+        "fill",
+        "forward",
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "purchase",
+      "forwardTo": "P_LOW",
+      "next": "FINAL"
+    },
+    {
+      "key": "P_LOW",
+      "role": "pur_low",
+      "actions": [
+        "fill",
+        "revise",
+        "reject"
+      ],
+      "fillSection": "purchase",
+      "returnTo": "P_MID"
+    },
+    {
+      "key": "FINAL",
+      "role": "registrar",
+      "actions": [
+        "approve",
+        "revise",
+        "reject"
+      ],
+      "next": "PO_TOP"
+    },
+    {
+      "key": "PO_TOP",
+      "role": "pur_top",
+      "actions": [
+        "fill",
+        "forward",
+        "approve"
+      ],
+      "fillSection": "po",
+      "forwardTo": "PO_MID",
+      "next": "DONE"
+    },
+    {
+      "key": "PO_MID",
+      "role": "pur_mid",
+      "actions": [
+        "fill",
+        "forward",
+        "approve"
+      ],
+      "fillSection": "po",
+      "forwardTo": "PO_LOW",
+      "next": "DONE"
+    },
+    {
+      "key": "PO_LOW",
+      "role": "pur_low",
+      "actions": [
+        "fill"
+      ],
+      "fillSection": "po",
+      "returnTo": "PO_MID"
+    },
+    {
+      "key": "DONE",
+      "role": null,
+      "actions": []
+    }
+  ]
+}
