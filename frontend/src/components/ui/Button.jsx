@@ -1,4 +1,10 @@
-// Owner: Rahul. Shared piece, keep it small and reusable.
-export default function Button() {
-  return null;
+import Icon from './Icon.jsx';
+
+export default function Button({ variant = '', size = '', icon, className = '', children, ...rest }) {
+  return (
+    <button type="button" className={`btn ${variant} ${size} ${className}`.trim()} {...rest}>
+      {icon && <Icon name={icon} size={size === 'sm' ? 14 : 16} />}
+      {children}
+    </button>
+  );
 }
