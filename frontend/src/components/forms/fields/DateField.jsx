@@ -1,4 +1,9 @@
-// Owner: Rahul. One field type. Receives: field (from the template), value, onChange, error, readOnly.
-export default function DateField() {
-  return null;
+import Field from '../../ui/Field.jsx';
+
+export default function DateField({ field, value, onChange, error, readOnly, className }) {
+  return (
+    <Field label={field.label} error={error} required={field.required} className={className}>
+      <input className="inp" type="date" value={value ?? ''} disabled={readOnly} onChange={(e) => onChange(field.name, e.target.value)} />
+    </Field>
+  );
 }

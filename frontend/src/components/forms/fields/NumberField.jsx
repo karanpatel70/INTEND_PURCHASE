@@ -1,4 +1,12 @@
-// Owner: Rahul. One field type. Receives: field (from the template), value, onChange, error, readOnly.
-export default function NumberField() {
-  return null;
+import Field from '../../ui/Field.jsx';
+
+export default function NumberField({ field, value, onChange, error, readOnly, className }) {
+  return (
+    <Field label={field.label} error={error} required={field.required} className={className}>
+      <input
+        className="inp" type="number" min={field.min} value={value ?? ''} placeholder={readOnly ? '' : field.placeholder} disabled={readOnly}
+        onChange={(e) => onChange(field.name, e.target.value)}
+      />
+    </Field>
+  );
 }
