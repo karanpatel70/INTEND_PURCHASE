@@ -1,299 +1,712 @@
 {
-  "code": "SPS-101(R)",
-  "version": 1,
-  "name": "SPS-101(R): Scientific equipment and consumables up to Rs. 2 lakh",
-  "workflowCode": "standard",
-  "limit": {
-    "amountField": "total",
-    "defaultRule": "all"
-  },
-  "sections": [
+ "code": "SPS-101(R)",
+ "version": 1,
+ "name": "SPS-101(R): Scientific equipment and consumables up to Rs. 2 lakh",
+ "note": "SPS-101(R) covers scientific equipment and consumables up to ₹2,00,000.",
+ "workflowCode": "standard",
+ "limit": {
+  "amountField": "total",
+  "defaultRule": "all"
+ },
+ "printLayout": "SPS-101(R)",
+ "sections": [
+  {
+   "key": "indenter",
+   "title": "Indenter section",
+   "tone": "ind",
+   "filledBy": "indenter",
+   "fields": [
     {
-      "key": "indenter",
-      "title": "Indenter and item details",
-      "filledBy": "indenter",
-      "fields": [
-        {
-          "name": "budgetHead",
-          "label": "Budget head",
-          "type": "select",
-          "required": true,
-          "optionsFrom": "budgetHead"
-        },
-        {
-          "name": "sanctioned",
-          "label": "Sanctioned budget (₹)",
-          "type": "number",
-          "required": true,
-          "min": 0
-        },
-        {
-          "name": "title",
-          "label": "Name of the item",
-          "type": "text",
-          "required": true,
-          "placeholder": "e.g. 24-port network switch"
-        },
-        {
-          "name": "cat",
-          "label": "Category",
-          "type": "radio",
-          "required": true,
-          "options": [
-            "Consumables",
-            "LTA",
-            "Non-consumables"
-          ]
-        },
-        {
-          "name": "purpose",
-          "label": "Purpose",
-          "type": "textarea",
-          "required": true,
-          "placeholder": "Why is this purchase needed?"
-        },
-        {
-          "name": "approvalEnclosed",
-          "label": "Budgetary approval enclosed",
-          "type": "radio",
-          "required": true,
-          "options": [
-            "Yes",
-            "No"
-          ]
-        },
-        {
-          "name": "space",
-          "label": "Space ready for installation",
-          "type": "radio",
-          "required": true,
-          "options": [
-            "Yes",
-            "No",
-            "NA"
-          ]
-        },
-        {
-          "name": "install",
-          "label": "Installation by the supplier",
-          "type": "radio",
-          "required": true,
-          "options": [
-            "Required",
-            "Not required"
-          ]
-        },
-        {
-          "name": "gem",
-          "label": "GeM purchase",
-          "type": "radio",
-          "required": true,
-          "options": [
-            "Yes",
-            "No"
-          ]
-        },
-        {
-          "name": "gemReason",
-          "label": "If the item is available on GeM, reason for non-GeM purchase",
-          "type": "textarea",
-          "required": true,
-          "showIf": {
-            "field": "gem",
-            "equals": "No"
-          }
-        },
-        {
-          "name": "country",
-          "label": "Country of origin mentioned in the quotation",
-          "type": "text",
-          "required": true,
-          "showIf": {
-            "field": "gem",
-            "equals": "No"
-          }
-        },
-        {
-          "name": "cname",
-          "label": "Consignee name",
-          "type": "text",
-          "required": true
-        },
-        {
-          "name": "caddr",
-          "label": "Delivery address",
-          "type": "text",
-          "required": true,
-          "placeholder": "Room, building, department"
-        },
-        {
-          "name": "modes",
-          "label": "Mode of enquiry",
-          "type": "checkboxes",
-          "required": true,
-          "options": [
-            "Telephone",
-            "E-mail",
-            "Spot visit",
-            "Vendor’s website",
-            "GeM"
-          ]
-        },
-        {
-          "name": "nq",
-          "label": "Quotations received",
-          "type": "number",
-          "required": true,
-          "min": 1
-        },
-        {
-          "name": "qno",
-          "label": "Quotation no.",
-          "type": "text",
-          "required": true
-        },
-        {
-          "name": "qdate",
-          "label": "Quotation date",
-          "type": "date",
-          "required": true
-        },
-        {
-          "name": "vendor",
-          "label": "Recommended vendor (M/s)",
-          "type": "text",
-          "required": true
-        },
-        {
-          "name": "items",
-          "label": "Items",
-          "type": "items-table",
-          "required": true,
-          "columns": [
-            {
-              "name": "desc",
-              "label": "Description",
-              "type": "text"
-            },
-            {
-              "name": "qty",
-              "label": "Qty",
-              "type": "number"
-            },
-            {
-              "name": "rate",
-              "label": "Rate (₹)",
-              "type": "number"
-            }
-          ],
-          "taxField": "tax",
-          "defaultTax": 18,
-          "calc": "itemsTotal",
-          "totalField": "total"
-        },
-        {
-          "name": "pay",
-          "label": "Recommended mode of payment",
-          "type": "text",
-          "required": true,
-          "default": "100% against delivery"
-        },
-        {
-          "name": "delivery",
-          "label": "Delivery period",
-          "type": "text",
-          "required": true,
-          "placeholder": "e.g. 3 weeks from PO"
-        },
-        {
-          "name": "decl",
-          "label": "I am personally satisfied that these goods are of the required quality and specification, and are bought from a reliable supplier at a reasonable price.",
-          "type": "checkbox",
-          "required": true
-        },
-        {
-          "name": "docs",
-          "label": "Supporting documents (quotation, specification)",
-          "type": "file",
-          "required": true
-        }
-      ]
+     "name": "userName",
+     "label": "Indenter",
+     "type": "display",
+     "width": "half",
+     "group": "Indenter and budget",
+     "calc": "userName",
+     "hideInView": true
     },
     {
-      "key": "accounts",
-      "title": "Accounts section",
-      "filledBy": "accounts",
-      "fields": [
-        {
-          "name": "head",
-          "label": "Budget head",
-          "type": "text",
-          "required": true
-        },
-        {
-          "name": "sanctioned",
-          "label": "Budget sanctioned (₹)",
-          "type": "number",
-          "required": true
-        },
-        {
-          "name": "available",
-          "label": "Budget available (₹)",
-          "type": "number",
-          "required": true
-        },
-        {
-          "name": "booked",
-          "label": "Budget booked (₹)",
-          "type": "number",
-          "required": true
-        }
-      ]
+     "name": "userDeptDesig",
+     "label": "Designation and department",
+     "type": "display",
+     "width": "half",
+     "group": "Indenter and budget",
+     "calc": "userDeptDesig",
+     "hideInView": true
     },
     {
-      "key": "purchase",
-      "title": "Purchase section",
-      "filledBy": "purchase",
-      "fields": [
-        {
-          "name": "quote",
-          "label": "Quotation is signed by the indenter",
-          "type": "checkbox",
-          "required": true
-        },
-        {
-          "name": "calc",
-          "label": "Calculations are checked and found in order",
-          "type": "checkbox",
-          "required": true
-        },
-        {
-          "name": "order",
-          "label": "Purchase proposal is in order",
-          "type": "checkbox",
-          "required": true
-        },
-        {
-          "name": "pagesFrom",
-          "label": "Proposal pages: from page",
-          "type": "number",
-          "required": true,
-          "min": 1
-        },
-        {
-          "name": "pagesTo",
-          "label": "Proposal pages: to page",
-          "type": "number",
-          "required": true,
-          "min": 1
-        },
-        {
-          "name": "cfa",
-          "label": "Financial sanction sought (₹)",
-          "type": "number",
-          "required": true
-        }
-      ]
+     "name": "budgetHead",
+     "label": "Budget head",
+     "type": "select",
+     "width": "half",
+     "group": "Indenter and budget",
+     "required": true,
+     "optionsFrom": "budgetHead",
+     "placeholder": "Select a budget head"
+    },
+    {
+     "name": "sanctioned",
+     "label": "Sanctioned budget (₹)",
+     "type": "number",
+     "width": "half",
+     "group": "Indenter and budget",
+     "required": true,
+     "min": 0,
+     "format": "inr"
+    },
+    {
+     "name": "title",
+     "label": "Name of the item",
+     "type": "text",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "placeholder": "e.g. 24-port network switch"
+    },
+    {
+     "name": "approx",
+     "label": "Approx. cost",
+     "type": "display",
+     "width": "half",
+     "group": "Item details",
+     "calc": "approxCost",
+     "hint": "Adds up from the quotation table below.",
+     "hideInView": false
+    },
+    {
+     "name": "cat",
+     "label": "Category",
+     "type": "radio",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "options": [
+      "Consumables",
+      "LTA",
+      "Non-consumables"
+     ],
+     "errorText": "Pick a category."
+    },
+    {
+     "name": "purpose",
+     "label": "Purpose",
+     "type": "textarea",
+     "width": "full",
+     "group": "Item details",
+     "required": true,
+     "placeholder": "Why is this purchase needed?"
+    },
+    {
+     "name": "approvalEnclosed",
+     "label": "Budgetary approval enclosed",
+     "type": "radio",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "options": [
+      "Yes",
+      "No"
+     ],
+     "errorText": "Choose Yes or No."
+    },
+    {
+     "name": "space",
+     "label": "Space ready for installation",
+     "type": "radio",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "options": [
+      "Yes",
+      "No",
+      "NA"
+     ],
+     "errorText": "Choose one."
+    },
+    {
+     "name": "install",
+     "label": "Installation by the supplier",
+     "type": "radio",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "options": [
+      "Required",
+      "Not required"
+     ],
+     "errorText": "Choose one."
+    },
+    {
+     "name": "gem",
+     "label": "GeM purchase",
+     "type": "radio",
+     "width": "half",
+     "group": "Item details",
+     "required": true,
+     "options": [
+      "Yes",
+      "No"
+     ],
+     "errorText": "Choose Yes or No.",
+     "hints": {
+      "Yes": "Attach the item specifications as shown on GeM.",
+      "No": "Attach a GeMAR&PTS ID report, since this item is not bought on GeM."
+     }
+    },
+    {
+     "name": "gemReason",
+     "label": "If the item is available on GeM, reason for non-GeM purchase",
+     "type": "textarea",
+     "width": "full",
+     "group": "Item details",
+     "required": true,
+     "placeholder": "Why is this not bought on GeM?",
+     "showIf": {
+      "field": "gem",
+      "equals": "No"
+     }
+    },
+    {
+     "name": "country",
+     "label": "Country of origin mentioned in the quotation",
+     "type": "text",
+     "width": "full",
+     "group": "Item details",
+     "required": true,
+     "placeholder": "e.g. India",
+     "showIf": {
+      "field": "gem",
+      "equals": "No"
+     }
+    },
+    {
+     "name": "cname",
+     "label": "Name",
+     "type": "text",
+     "width": "half",
+     "group": "Consignee",
+     "required": true,
+     "default": "@userName"
+    },
+    {
+     "name": "caddr",
+     "label": "Delivery address",
+     "type": "text",
+     "width": "half",
+     "group": "Consignee",
+     "required": true,
+     "placeholder": "Room, building, department"
+    },
+    {
+     "name": "modes",
+     "label": "Mode of enquiry",
+     "type": "checkboxes",
+     "width": "full",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "options": [
+      "Telephone",
+      "E-mail",
+      "Spot visit",
+      "Vendor’s website",
+      "GeM"
+     ],
+     "errorText": "Pick at least one."
+    },
+    {
+     "name": "nq",
+     "label": "Quotations received",
+     "type": "number",
+     "width": "third",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "min": 1
+    },
+    {
+     "name": "qno",
+     "label": "Quotation no.",
+     "type": "text",
+     "width": "third",
+     "group": "Quotation and recommendation",
+     "required": true
+    },
+    {
+     "name": "qdate",
+     "label": "Quotation date",
+     "type": "date",
+     "width": "third",
+     "group": "Quotation and recommendation",
+     "required": true
+    },
+    {
+     "name": "vendor",
+     "label": "Recommended vendor (M/s)",
+     "type": "text",
+     "width": "full",
+     "group": "Quotation and recommendation",
+     "required": true
+    },
+    {
+     "name": "items",
+     "label": "Items",
+     "type": "items-table",
+     "width": "full",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "columns": [
+      {
+       "name": "desc",
+       "label": "Description",
+       "type": "text"
+      },
+      {
+       "name": "qty",
+       "label": "Qty",
+       "type": "number"
+      },
+      {
+       "name": "rate",
+       "label": "Rate (₹)",
+       "type": "number"
+      }
+     ],
+     "taxField": "tax",
+     "defaultTax": 18,
+     "calc": "itemsTotal",
+     "totalField": "total",
+     "errorText": "Add at least one item with a description, quantity and rate."
+    },
+    {
+     "name": "pay",
+     "label": "Recommended mode of payment",
+     "type": "text",
+     "width": "half",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "default": "100% against delivery"
+    },
+    {
+     "name": "delivery",
+     "label": "Delivery period",
+     "type": "text",
+     "width": "half",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "placeholder": "e.g. 3 weeks from PO"
+    },
+    {
+     "name": "decl",
+     "label": "I am personally satisfied that these goods are of the required quality and specification, and are bought from a reliable supplier at a reasonable price.",
+     "type": "checkbox",
+     "width": "full",
+     "group": "Quotation and recommendation",
+     "required": true,
+     "errorText": "Tick this to confirm.",
+     "hideInView": true
+    },
+    {
+     "name": "docs",
+     "label": "Attach quotation and specification files",
+     "type": "file",
+     "width": "full",
+     "group": "Supporting documents",
+     "required": true,
+     "errorText": "Attach at least one document, such as the quotation.",
+     "hideInView": true
     }
-  ]
+   ],
+   "signSlots": [
+    {
+     "label": "Signature of the indenter",
+     "path": "indenter",
+     "empty": "Not submitted"
+    },
+    {
+     "label": "HOD",
+     "path": "signs.hod",
+     "empty": "Not reviewed yet"
+    }
+   ]
+  },
+  {
+   "key": "accounts",
+   "title": "Accounts section",
+   "tone": "acc",
+   "filledBy": "accounts",
+   "emptyText": "Accounts fills this section after HOD approval.",
+   "fields": [
+    {
+     "name": "head",
+     "label": "Budget head",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "sanctioned",
+     "label": "Budget sanctioned (₹)",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "format": "inr"
+    },
+    {
+     "name": "available",
+     "label": "Budget available (₹)",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "placeholder": "Enter amount",
+     "format": "inr"
+    },
+    {
+     "name": "booked",
+     "label": "Budget booked (₹)",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "format": "inr"
+    },
+    {
+     "name": "balance",
+     "label": "Balance budget",
+     "type": "display",
+     "width": "full",
+     "calc": "balance",
+     "hint": "Shown after you fill the amounts"
+    }
+   ],
+   "signSlots": [
+    {
+     "label": "JAA/SAA",
+     "path": "signs.accounts.a_low",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "JAO/AO",
+     "path": "signs.accounts.a_mid",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "AR/DR/JR",
+     "path": "signs.accounts.a_top",
+     "empty": "Pending"
+    }
+   ]
+  },
+  {
+   "key": "purchase",
+   "title": "Purchase section",
+   "tone": "pur",
+   "filledBy": "purchase",
+   "emptyText": "Purchase fills this section after Accounts.",
+   "fields": [
+    {
+     "name": "quote",
+     "label": "Quotation is signed by the indenter",
+     "type": "checkbox",
+     "width": "full",
+     "required": true,
+     "errorText": "Tick all three checks before you sign this section."
+    },
+    {
+     "name": "calc",
+     "label": "Calculations are checked and found in order",
+     "type": "checkbox",
+     "width": "full",
+     "required": true,
+     "errorText": "Tick all three checks before you sign this section."
+    },
+    {
+     "name": "order",
+     "label": "Purchase proposal is in order",
+     "type": "checkbox",
+     "width": "full",
+     "required": true,
+     "errorText": "Tick all three checks before you sign this section."
+    },
+    {
+     "name": "pagesFrom",
+     "label": "Proposal pages: from page",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "min": 1,
+     "placeholder": "e.g. 1"
+    },
+    {
+     "name": "pagesTo",
+     "label": "Proposal pages: to page",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "min": 1,
+     "placeholder": "e.g. 4",
+     "errorText": "Enter the last page, same as or after the first page.",
+     "notBefore": "pagesFrom"
+    },
+    {
+     "name": "cfa",
+     "label": "Financial sanction sought (₹)",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "format": "inr"
+    }
+   ],
+   "signSlots": [
+    {
+     "label": "OA/JA/SA",
+     "path": "signs.purchase.p_low",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "JS/Supdt.",
+     "path": "signs.purchase.p_mid",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "AR/DR/JR",
+     "path": "signs.purchase.p_top",
+     "empty": "Pending"
+    }
+   ]
+  },
+  {
+   "key": "final",
+   "title": "Final approval",
+   "tone": "fin",
+   "filledBy": "none",
+   "fields": [],
+   "signSlots": [
+    {
+     "label": "HOD / Registrar",
+     "path": "signs.final",
+     "empty": "Not approved yet",
+     "emptyIfRejected": "Rejected"
+    }
+   ]
+  },
+  {
+   "key": "po",
+   "title": "Purchase order",
+   "tone": "fin",
+   "filledBy": "purchase",
+   "emptyText": "Purchase fills the PO form after final approval.",
+   "fields": [
+    {
+     "name": "ref",
+     "label": "Reference no.",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "date",
+     "label": "PO date",
+     "type": "date",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "kind",
+     "label": "Type of order",
+     "type": "select",
+     "width": "half",
+     "options": [
+      "Purchase order",
+      "Work order"
+     ],
+     "default": "Purchase order",
+     "hideInView": true
+    },
+    {
+     "name": "subject",
+     "label": "Subject (item or work)",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "vendor",
+     "label": "Supplier (M/s)",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "qno",
+     "label": "Quotation no.",
+     "type": "text",
+     "width": "half",
+     "hideInView": true
+    },
+    {
+     "name": "qdate",
+     "label": "Quotation date",
+     "type": "date",
+     "width": "half",
+     "hideInView": true
+    },
+    {
+     "name": "signer",
+     "label": "Signed by (designation shown on the order)",
+     "type": "text",
+     "width": "half",
+     "default": "Assistant Registrar (S&P)",
+     "hideInView": true
+    },
+    {
+     "name": "vendorAddr",
+     "label": "Supplier address (one line per row)",
+     "type": "textarea",
+     "width": "full",
+     "required": true,
+     "placeholder": "Shop or building, street\nCity - PIN code",
+     "hideInView": true
+    },
+    {
+     "name": "items",
+     "label": "Items ordered",
+     "type": "items-table",
+     "width": "full",
+     "required": true,
+     "columns": [
+      {
+       "name": "desc",
+       "label": "Description",
+       "type": "text"
+      },
+      {
+       "name": "qty",
+       "label": "Qty",
+       "type": "number"
+      },
+      {
+       "name": "rate",
+       "label": "Unit price (₹)",
+       "type": "number"
+      }
+     ],
+     "taxField": "gstPct",
+     "taxLabel": "GST",
+     "taxEditable": false,
+     "calc": "itemsTotal",
+     "errorText": "Add at least one item with a description and a quantity.",
+     "hideInView": true
+    },
+    {
+     "name": "gstPct",
+     "label": "GST rate (%)",
+     "type": "number",
+     "width": "half",
+     "required": true,
+     "hideInView": true
+    },
+    {
+     "name": "gst",
+     "label": "GST",
+     "type": "select",
+     "width": "half",
+     "options": [
+      "Included",
+      "Extra as applicable"
+     ],
+     "default": "Included",
+     "hideInView": true
+    },
+    {
+     "name": "deliverTo",
+     "label": "Deliver to (FOR)",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "deliveryBy",
+     "label": "Delivery and installation",
+     "type": "text",
+     "width": "half",
+     "required": true,
+     "placeholder": "e.g. Within 3 weeks",
+     "calc": "deliveryText",
+     "calcInputs": [
+      "byPreset"
+     ]
+    },
+    {
+     "name": "byPreset",
+     "label": "Delivery within",
+     "type": "select",
+     "width": "half",
+     "optionsFrom": "deliveryPeriod",
+     "extraOptions": [
+      "Pick a date"
+     ],
+     "hideInView": true
+    },
+    {
+     "name": "byDate",
+     "label": "Positively by (date)",
+     "type": "date",
+     "width": "half",
+     "required": true,
+     "calc": "deliveryDate",
+     "calcInputs": [
+      "date",
+      "byPreset"
+     ],
+     "onEdit": {
+      "byPreset": "Pick a date"
+     }
+    },
+    {
+     "name": "payment",
+     "label": "Payment terms",
+     "type": "text",
+     "width": "half",
+     "required": true
+    },
+    {
+     "name": "std",
+     "label": "Standard terms from point 5 onwards (one per line)",
+     "type": "textarea",
+     "width": "full",
+     "hideInView": true
+    },
+    {
+     "name": "terms",
+     "label": "Additional term (optional)",
+     "type": "textarea",
+     "width": "full",
+     "placeholder": "Warranty, installation, penalties",
+     "hideInView": true
+    },
+    {
+     "name": "cc",
+     "label": "CC to (one per line)",
+     "type": "textarea",
+     "width": "full",
+     "hideInView": true
+    }
+   ],
+   "signSlots": [
+    {
+     "label": "OA/JA/SA",
+     "path": "signs.po.p_low",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "JS/Supdt.",
+     "path": "signs.po.p_mid",
+     "empty": "Skipped or pending"
+    },
+    {
+     "label": "AR/DR/JR",
+     "path": "signs.po.p_top",
+     "empty": "Pending"
+    }
+   ]
+  }
+ ]
 }

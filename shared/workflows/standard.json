@@ -1,154 +1,306 @@
 {
-  "code": "standard",
-  "version": 1,
-  "note": "STARTER. Karan: check every step against the v9 prototype before relying on it.",
-  "steps": [
-    {
-      "key": "DRAFT",
-      "role": "indenter",
-      "actions": [
-        "submit",
-        "cancel"
-      ],
-      "next": "HOD"
-    },
-    {
-      "key": "HOD",
-      "role": "hod",
-      "actions": [
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "next": "A_TOP"
-    },
-    {
-      "key": "A_TOP",
-      "role": "acc_top",
-      "actions": [
-        "fill",
-        "forward",
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "accounts",
-      "forwardTo": "A_MID",
-      "skipTo": "A_LOW",
-      "next": "P_TOP"
-    },
-    {
-      "key": "A_MID",
-      "role": "acc_mid",
-      "actions": [
-        "fill",
-        "forward",
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "accounts",
-      "forwardTo": "A_LOW",
-      "next": "P_TOP"
-    },
-    {
-      "key": "A_LOW",
-      "role": "acc_low",
-      "actions": [
-        "fill",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "accounts",
-      "returnTo": "A_MID"
-    },
-    {
-      "key": "P_TOP",
-      "role": "pur_top",
-      "actions": [
-        "fill",
-        "forward",
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "purchase",
-      "forwardTo": "P_MID",
-      "skipTo": "P_LOW",
-      "next": "FINAL"
-    },
-    {
-      "key": "P_MID",
-      "role": "pur_mid",
-      "actions": [
-        "fill",
-        "forward",
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "purchase",
-      "forwardTo": "P_LOW",
-      "next": "FINAL"
-    },
-    {
-      "key": "P_LOW",
-      "role": "pur_low",
-      "actions": [
-        "fill",
-        "revise",
-        "reject"
-      ],
-      "fillSection": "purchase",
-      "returnTo": "P_MID"
-    },
-    {
-      "key": "FINAL",
-      "role": "registrar",
-      "actions": [
-        "approve",
-        "revise",
-        "reject"
-      ],
-      "next": "PO_TOP"
-    },
-    {
-      "key": "PO_TOP",
-      "role": "pur_top",
-      "actions": [
-        "fill",
-        "forward",
-        "approve"
-      ],
-      "fillSection": "po",
-      "forwardTo": "PO_MID",
-      "next": "DONE"
-    },
-    {
-      "key": "PO_MID",
-      "role": "pur_mid",
-      "actions": [
-        "fill",
-        "forward",
-        "approve"
-      ],
-      "fillSection": "po",
-      "forwardTo": "PO_LOW",
-      "next": "DONE"
-    },
-    {
-      "key": "PO_LOW",
-      "role": "pur_low",
-      "actions": [
-        "fill"
-      ],
-      "fillSection": "po",
-      "returnTo": "PO_MID"
-    },
-    {
-      "key": "DONE",
-      "role": null,
-      "actions": []
-    }
-  ]
+ "code": "standard",
+ "version": 1,
+ "note": "Matches the v9 prototype. Karan: the backend workflow engine must follow this file.",
+ "progress": [
+  "Submitted",
+  "HOD review",
+  "Accounts",
+  "Purchase",
+  "Final approval",
+  "Purchase order"
+ ],
+ "tierLabels": {
+  "a_top": "AR/DR/JR (Accounts)",
+  "a_mid": "JAO/AO (Accounts)",
+  "a_low": "JAA/SAA (Accounts)",
+  "p_top": "AR/DR/JR (Purchase)",
+  "p_mid": "JS/Supdt. (Purchase)",
+  "p_low": "OA/JA/SA (Purchase)",
+  "final": "Final approver: HOD of the indenter’s department, or Registrar",
+  "hod": "HOD"
+ },
+ "stages": {
+  "DRAFT": {
+   "label": "Draft",
+   "chip": "c-gray",
+   "step": 0
+  },
+  "RETURNED": {
+   "label": "Returned for correction",
+   "chip": "c-orange",
+   "step": 0
+  },
+  "REJECTED": {
+   "label": "Rejected",
+   "chip": "c-red",
+   "step": -1
+  },
+  "CANCELLED": {
+   "label": "Cancelled",
+   "chip": "c-cancel",
+   "step": -1
+  },
+  "HOD": {
+   "label": "With HOD",
+   "chip": "c-gray",
+   "step": 1,
+   "tier": "hod",
+   "approve": {
+    "title": "Approve and send to Accounts",
+    "to": [
+     "a_top"
+    ],
+    "next": "A_TOP"
+   }
+  },
+  "A_TOP": {
+   "label": "Accounts: AR/DR/JR",
+   "chip": "c-blue",
+   "step": 2,
+   "tier": "a_top",
+   "fillSection": "accounts",
+   "forward": [
+    "a_mid",
+    "a_low"
+   ],
+   "approve": {
+    "title": "Approve and send to Purchase",
+    "to": [
+     "p_top"
+    ],
+    "next": "P_TOP"
+   }
+  },
+  "A_MID": {
+   "label": "Accounts: JAO/AO",
+   "chip": "c-blue",
+   "step": 2,
+   "tier": "a_mid",
+   "fillSection": "accounts",
+   "forward": [
+    "a_low"
+   ],
+   "approve": {
+    "title": "Approve and send back up",
+    "to": [
+     "a_top"
+    ],
+    "next": "A_TOP"
+   }
+  },
+  "A_LOW": {
+   "label": "Accounts: JAA/SAA",
+   "chip": "c-blue",
+   "step": 2,
+   "tier": "a_low",
+   "fillSection": "accounts",
+   "approve": {
+    "title": "Approve and send back up",
+    "to": [
+     "a_mid"
+    ],
+    "next": "A_MID"
+   }
+  },
+  "P_TOP": {
+   "label": "Purchase: AR/DR/JR",
+   "chip": "c-green",
+   "step": 3,
+   "tier": "p_top",
+   "fillSection": "purchase",
+   "forward": [
+    "p_mid",
+    "p_low"
+   ],
+   "approve": {
+    "title": "Approve and send for final approval",
+    "to": [
+     "final"
+    ],
+    "next": "FINAL"
+   }
+  },
+  "P_MID": {
+   "label": "Purchase: JS/Supdt.",
+   "chip": "c-green",
+   "step": 3,
+   "tier": "p_mid",
+   "fillSection": "purchase",
+   "forward": [
+    "p_low"
+   ],
+   "approve": {
+    "title": "Approve and send back up",
+    "to": [
+     "p_top"
+    ],
+    "next": "P_TOP"
+   }
+  },
+  "P_LOW": {
+   "label": "Purchase: OA/JA/SA",
+   "chip": "c-green",
+   "step": 3,
+   "tier": "p_low",
+   "fillSection": "purchase",
+   "approve": {
+    "title": "Approve and send back up",
+    "to": [
+     "p_mid"
+    ],
+    "next": "P_MID"
+   }
+  },
+  "FINAL": {
+   "label": "Final approval",
+   "chip": "c-amber",
+   "step": 4,
+   "tier": "final",
+   "approve": {
+    "title": "Approve and send back to Purchase",
+    "to": [
+     "p_top"
+    ],
+    "next": "PO_TOP"
+   }
+  },
+  "PO_TOP": {
+   "label": "Purchase order: AR/DR/JR",
+   "chip": "c-amber",
+   "step": 5,
+   "tier": "p_top",
+   "fillSection": "po",
+   "forward": [
+    "p_mid",
+    "p_low"
+   ],
+   "approve": {
+    "title": "Generate purchase order",
+    "generate": true
+   },
+   "noReject": true
+  },
+  "PO_MID": {
+   "label": "Purchase order: JS/Supdt.",
+   "chip": "c-amber",
+   "step": 5,
+   "tier": "p_mid",
+   "fillSection": "po",
+   "forward": [
+    "p_low"
+   ],
+   "approve": {
+    "title": "Send back up",
+    "to": [
+     "p_top"
+    ],
+    "next": "PO_TOP",
+    "label": "Send back"
+   },
+   "noReject": true
+  },
+  "PO_LOW": {
+   "label": "Purchase order: OA/JA/SA",
+   "chip": "c-amber",
+   "step": 5,
+   "tier": "p_low",
+   "fillSection": "po",
+   "approve": {
+    "title": "Send back up",
+    "to": [
+     "p_mid"
+    ],
+    "next": "PO_MID",
+    "label": "Send back"
+   },
+   "noReject": true
+  },
+  "DONE": {
+   "label": "Approved",
+   "chip": "c-solidgreen",
+   "step": 6
+  }
+ },
+ "resetPoints": [
+  {
+   "id": "hod",
+   "label": "HOD review",
+   "desc": "Starts the whole approval again. Clears every section and signature.",
+   "stage": "HOD",
+   "tier": "hod",
+   "step": 1,
+   "clears": [
+    "accounts",
+    "purchase",
+    "po"
+   ],
+   "keepSigns": []
+  },
+  {
+   "id": "acct",
+   "label": "Accounts section",
+   "desc": "Clears the Accounts, Purchase and PO sections.",
+   "stage": "A_TOP",
+   "tier": "a_top",
+   "step": 2,
+   "clears": [
+    "accounts",
+    "purchase",
+    "po"
+   ],
+   "keepSigns": [
+    "hod"
+   ]
+  },
+  {
+   "id": "pur",
+   "label": "Purchase section",
+   "desc": "Clears the Purchase and PO sections. Approval runs again from here.",
+   "stage": "P_TOP",
+   "tier": "p_top",
+   "step": 3,
+   "clears": [
+    "purchase",
+    "po"
+   ],
+   "keepSigns": [
+    "hod",
+    "accounts"
+   ]
+  },
+  {
+   "id": "final",
+   "label": "Final approval",
+   "desc": "Clears the final approval and the PO section.",
+   "stage": "FINAL",
+   "tier": "final",
+   "step": 4,
+   "clears": [
+    "po"
+   ],
+   "keepSigns": [
+    "hod",
+    "accounts",
+    "purchase"
+   ]
+  },
+  {
+   "id": "po",
+   "label": "Purchase order",
+   "desc": "Clears the PO section only.",
+   "stage": "PO_TOP",
+   "tier": "p_top",
+   "step": 5,
+   "clears": [
+    "po"
+   ],
+   "keepSigns": [
+    "hod",
+    "accounts",
+    "purchase",
+    "final"
+   ]
+  }
+ ]
 }

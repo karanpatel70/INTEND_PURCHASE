@@ -1,3 +1,5 @@
+import { itemsTotal } from './calculators.js';
+
 // Owner: Rahul (Manvendra reviews). Used by BOTH the frontend and the backend,
 // so the checks are always identical. Plain JavaScript, no libraries.
 
@@ -18,7 +20,7 @@ const isEmpty = (v) =>
 export function validateSection(section, values) {
   const errors = {};
   for (const field of section.fields) {
-    if (!isVisible(field, values)) continue;
+    if (!isVisible(field, values) || field.type === 'display') continue;
     const v = values[field.name];
 
     if (field.type === 'items-table') {
@@ -37,9 +39,19 @@ export function validateSection(section, values) {
       if (Number.isNaN(n)) errors[field.name] = 'Enter a number.';
       else if (field.min !== undefined && n < field.min) errors[field.name] = `Must be at least ${field.min}.`;
       else if (field.max !== undefined && n > field.max) errors[field.name] = `Must be at most ${field.max}.`;
+      else if (field.notBefore && n < Number(values[field.notBefore])) errors[field.name] = field.errorText || 'Check this number.';
     }
   }
   return errors;
+}
+
+// Adds the computed total (e.g. values.total) from the items table. Call it before checking limits or saving.
+export function withTotals(section, values) {
+  const table = section.fields.find((f) => f.type === 'items-table' && f.totalField);
+  if (!table) return values;
+  const tax = values[table.taxField] ?? table.defaultTax ?? 0;
+  const { subtotal, total } = itemsTotal(values[table.name], tax);
+  return { ...values, [table.taxField]: tax, subtotal, [table.totalField]: total };
 }
 
 // Which limit rule applies? e.g. SPS-101 uses the "GeM" limit when gem = Yes.
