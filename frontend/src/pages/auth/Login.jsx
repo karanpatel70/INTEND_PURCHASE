@@ -6,8 +6,7 @@ import { ROLE_ORDER, emailLocal } from '../../utils/roles.js';
 import Icon from '../../components/ui/Icon.jsx';
 import Field from '../../components/ui/Field.jsx';
 
-// Owner: Sujeet. Sign in. For now you pick your name from a list (demo). The real server
-// will ask for the college email + password instead: only the first box changes.
+
 export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();

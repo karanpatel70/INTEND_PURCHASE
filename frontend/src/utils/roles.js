@@ -1,2 +1,2 @@
-// Owner: Rahul. Which menu items / pages each role can see.
-export const ROLES = ['admin','registrar','hod','indenter','acc_top','acc_mid','acc_low','pur_top','pur_mid','pur_low'];
+// Role helpers. They live in shared/roles.js so the backend uses the same ones.
+export * from '@shared/roles.js';
