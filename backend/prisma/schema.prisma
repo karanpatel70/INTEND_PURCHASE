@@ -1,6 +1,6 @@
-// Owner: Sujeet. STARTER covering tables 1-8 of the guide (not yet run against a real database).
-// First step: run `npx prisma validate`, fix anything it reports, then add the remaining tables:
-// ApprovalAuthority, Attachment, PoExtension, Reminder, AuditLog.
+// Owner: Sujeet. All 13 tables. Checked with the Prisma schema validator.
+// Added for the API: FormTemplate.note/printLayout and IndentHistory.text/kind.
+// Run `npx prisma migrate dev --name init` to create the tables.
 
 generator client {
   provider = "prisma-client-js"
@@ -43,6 +43,8 @@ model User {
   createdAt    DateTime   @default(now())
   created      Indent[]   @relation("Creator")
   holding      Indent[]   @relation("Holder")
+  authorities  ApprovalAuthority[]
+  reminders    Reminder[]
 }
 
 model ListItem {
@@ -60,6 +62,8 @@ model FormTemplate {
   version      Int      @default(1)
   name         String
   workflowCode String
+  note         String?
+  printLayout  String?
   limit        Json?
   sections     Json
   active       Boolean  @default(true)
@@ -111,17 +115,21 @@ model Indent {
   updatedAt      DateTime         @updatedAt
   history        IndentHistory[]
   order          PurchaseOrder?
+  attachments    Attachment[]
+  reminders      Reminder[]
 }
 
 model IndentHistory {
   id        Int      @id @default(autoincrement())
   indentId  Int
-  indent    Indent   @relation(fields: [indentId], references: [id])
+  indent    Indent   @relation(fields: [indentId], references: [id], onDelete: Cascade)
   actorId   Int
   action    String
   fromStage String
   toStage   String
   remark    String?
+  text      String?
+  kind      String?
   at        DateTime @default(now())
 }
 
@@ -133,6 +141,65 @@ model PurchaseOrder {
   vendor    String
   orderDate DateTime
   dueDate   DateTime
-  status    String   @default("ongoing")
+  status    String   @default("open")
   data      Json?
+  extensions PoExtension[]
+  reminders  Reminder[]
+}
+
+model ApprovalAuthority {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  formCode  String
+  maxAmount Decimal @db.Decimal(12, 2)
+  active    Boolean @default(true)
+
+  @@unique([userId, formCode])
+}
+
+model Attachment {
+  id           Int      @id @default(autoincrement())
+  indentId     Int
+  indent       Indent   @relation(fields: [indentId], references: [id], onDelete: Cascade)
+  fileName     String
+  filePath     String
+  sizeBytes    Int?
+  uploadedById Int
+  uploadedAt   DateTime @default(now())
+}
+
+model PoExtension {
+  id            Int           @id @default(autoincrement())
+  orderId       Int
+  order         PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  oldDueDate    DateTime
+  newDueDate    DateTime
+  reason        String
+  status        String        @default("pending")
+  requestedById Int
+  decidedById   Int?
+  createdAt     DateTime      @default(now())
+}
+
+model Reminder {
+  id        Int            @id @default(autoincrement())
+  userId    Int
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  indentId  Int?
+  indent    Indent?        @relation(fields: [indentId], references: [id], onDelete: Cascade)
+  orderId   Int?
+  order     PurchaseOrder? @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  kind      String
+  sendAt    DateTime
+  sentAt    DateTime?
+}
+
+model AuditLog {
+  id      Int      @id @default(autoincrement())
+  actorId Int?
+  action  String
+  target  String?
+  detail  Json?
+  at      DateTime @default(now())
 }
