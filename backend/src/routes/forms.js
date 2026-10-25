@@ -1,8 +1,18 @@
 import { Router } from 'express';
+import { wrap, HttpError } from '../middleware/errorHandler.js';
+import { requireLogin } from '../middleware/auth.js';
+import { listForms, getForm } from '../services/formService.js';
 
-// Owner: Manvendra. Endpoints are listed in the team guide, section 4.
+
+//   GET /api/forms/:code 
 const router = Router();
 
-router.get('/', (req, res) => res.status(501).json({ error: 'Not built yet' }));
+router.get('/', requireLogin, wrap(async (req, res) => res.json(await listForms())));
+
+router.get('/:code', requireLogin, wrap(async (req, res) => {
+  const form = await getForm(req.params.code);
+  if (!form) throw new HttpError(404, 'Form not found');
+  res.json(form);
+}));
 
 export default router;
