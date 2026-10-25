@@ -4,7 +4,7 @@ import { validateSection, withTotals, limitRuleFor } from '../../../shared/rules
 import { getCurrentLimit } from './limitService.js';
 import { inr } from '../../../shared/utils.js';
 
-// Turn a database row into the object the frontend expects.
+//Turn a database row into the object.
 function toApiForm(row) {
   return {
     code: row.code,
@@ -18,7 +18,7 @@ function toApiForm(row) {
   };
 }
 
-// Get the newest active version of one form (the raw database row).
+//Get the newest active version of one form.
 export async function getFormRow(code) {
   return prisma.formTemplate.findFirst({
     where: { code, active: true },
@@ -26,24 +26,23 @@ export async function getFormRow(code) {
   });
 }
 
-// Same as above, but in the frontend shape. Returns null if not found.
 export async function getForm(code) {
   const row = await getFormRow(code);
   if (!row) return null;
   return toApiForm(row);
 }
 
-// List all forms, only the newest version of each.
+//List all forms, only the newest version of each.
 export async function listForms() {
-  // inside each code, the newest version comes first
+
   const rows = await prisma.formTemplate.findMany({
     where: { active: true },
     orderBy: [{ code: 'asc' }, { version: 'desc' }],
   });
 
-  const newest = {}; // code -> row
+  const newest = {};
   for (const row of rows) {
-    if (!newest[row.code]) newest[row.code] = row; // keep the first one only
+    if (!newest[row.code]) newest[row.code] = row; //keep the first one only among all code:version
   }
   return Object.values(newest).map(toApiForm);
 }
@@ -52,7 +51,7 @@ export async function listForms() {
 export async function checkIndenter(template, values, strict) {
   const section = template.sections.find((s) => s.key === 'indenter');
 
-  //work out the total again (never trust the total sent by the browser)
+  //work out the total again
   const full = withTotals(section, values || {});
   const total = Number(full.total) || 0;
 
@@ -63,18 +62,18 @@ export async function checkIndenter(template, values, strict) {
     limitApplied = (await getCurrentLimit(template.code, rule)) || 0;
   }
 
-  //a draft needs no more checks
+  //Draft does not require strcit checks
   if (!strict) {
     return { values: full, total, limitApplied };
   }
 
-  //1. every field must be valid
+  //Every field must be valid
   const errors = validateSection(section, full);
   if (Object.keys(errors).length > 0) {
     throw new HttpError(400, 'Please fix the highlighted fields.', { fields: errors });
   }
 
-  //2. the amount must not be above the limit
+  //The amount must not be above the limit
   const amountField = template.limit?.amountField || 'total';
   const amount = Number(full[amountField]) || 0;
   if (limitApplied && amount > limitApplied) {
