@@ -1,2 +1,8 @@
-// Check request bodies with zod before they reach the route.
-export const validate = (schema) => (req, res, next) => next(); // TODO
+export const validate = (schema) => (req, res, next) => {
+  try {
+    req.body = schema.parse(req.body);
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
