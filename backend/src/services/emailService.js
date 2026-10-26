@@ -1,6 +1,3 @@
-// Owner: Sujeet. Nodemailer: sendMail(to, subject, html) + templates.
-// Owner: Sujeet. Nodemailer: sendMail(to, subject, html) + the email texts.
-// If SMTP_HOST is empty in .env, nothing is sent: the email is printed in the terminal instead.
 import nodemailer from 'nodemailer';
 import { env } from '../config/env.js';
 
