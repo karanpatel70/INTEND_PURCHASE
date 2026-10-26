@@ -9,6 +9,7 @@ import orders from './orders.js';
 import reminders from './reminders.js';
 import reports from './reports.js';
 import attachments from './attachments.js';
+import lists from './lists.js';
 
 const router = Router();
 
@@ -16,6 +17,7 @@ router.get('/health', (req, res) => res.json({ ok: true }));
 router.use('/auth', auth);
 router.use('/users', users);
 router.use('/admin', admin);
+router.use('/lists', lists);
 router.use('/forms', forms);
 router.use('/indents', indents);
 router.use('/indents', indentActions);

@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import { useLists } from '../../hooks/useLists.js';
 import { getLimits } from '../../api/forms.js';
 import { listIndents } from '../../api/indents.js';
-import { listUsers, addLimit } from '../../api/admin.js';
+import { listUsers, addLimit, addListItem, removeListItem } from '../../api/admin.js';
 import { isOpen, stages } from '@shared/workflow.js';
 import { inr, dstr, todayStr } from '../../utils/format.js';
 import Button from '../../components/ui/Button.jsx';
 import Icon from '../../components/ui/Icon.jsx';
 
-// Owner: Sujeet. Admin: the settings the forms depend on. An overview, the price limits per form,
+// Admin: the settings the forms depend on. An overview, the price limits per form,
 // and the dropdown lists. Saving anything is a preview for now: it only shows a message.
 const LIST_CARDS = [
   { id: 'department', title: 'Departments', hint: 'Shown on the sign-up page and on every indent.' },
@@ -83,13 +83,19 @@ function ListCard({ card, toast }) {
   const [value, setValue] = useState('');
   const items = [...(lists[card.id] || []), ...extra].filter((x) => !gone.includes(x));
 
-  function add() {
+    async function add() {
     const v = value.trim();
     if (!v) return;
     if (items.some((x) => x.toLowerCase() === v.toLowerCase())) return toast('That item is already in the list.');
+    await addListItem(card.id, v);
     setExtra([...extra, v]);
     setValue('');
-    toast(`Added ${v} (preview only)`);
+    toast(`Added ${v}`);
+  }
+
+  async function remove(it) {
+    await removeListItem(card.id, it);
+    setGone([...gone, it]);
   }
 
   return (
@@ -98,7 +104,7 @@ function ListCard({ card, toast }) {
       <div className="muted small mb16">{card.hint}</div>
       <div className="lchips mb16">
         {items.map((it) => (
-          <span className="lchip" key={it}>{it}<button aria-label={`Remove ${it}`} onClick={() => setGone([...gone, it])}><Icon name="x" size={12} /></button></span>
+          <span className="lchip" key={it}>{it}<button aria-label={`Remove ${it}`} onClick={() => remove(it)}><Icon name="x" size={12} /></button></span>
         ))}
       </div>
       <div className="row" style={{ gap: 8 }}>
@@ -121,7 +127,8 @@ function LimitsCard({ toast }) {
     const [formCode, rule] = key.split('|');
     await addLimit({ formCode, rule, amount: Number(draft.amount), effectiveFrom: draft.from });
     setDraft({ key: '', amount: '', from: todayStr() });
-    toast('New limit saved (preview only)');
+    getLimits().then(setCurrent);
+    toast('New limit saved');
   }
 
   return (

@@ -99,5 +99,16 @@ export const users = [
    "p_low"
   ],
   "status": "authorised"
+ },
+ {
+  "id": "p_admin",
+  "email": "admin@iitrpr.ac.in",
+  "name": "Mr. Admin",
+  "desig": "System Administrator",
+  "dept": "IT",
+  "tiers": [
+   "admin"
+  ],
+  "status": "authorised"
  }
 ];

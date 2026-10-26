@@ -35,6 +35,7 @@ export default function App() {
           <Route path="/indents/:id" element={<IndentDetail />} />
           <Route path="/track" element={<TrackIndent />} />
           <Route path="/indents/new" element={<CreateIndent />} />
+          <Route path="/indents/:id/edit" element={<CreateIndent />} />
           <Route path="/indents/:id/preview" element={<FormPreview />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/indents/:id/fill/:section" element={<FillSection />} />
