@@ -11,7 +11,7 @@ import HistoryList from '../../components/ui/HistoryList.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Icon from '../../components/ui/Icon.jsx';
 
-// Owner: Sujeet. Admin: every indent in the system. Pick one on the left, see its details and act on it on the right.
+// Admin: every indent in the system. Pick one on the left, see its details and act on it on the right.
 // Reroute and Delete open their dialogs but only show a message for now (preview).
 export default function AdminIndents() {
   const navigate = useNavigate();
@@ -48,14 +48,14 @@ export default function AdminIndents() {
     setDialog({
       title: 'Reroute', lines: [`${selected.no} · ${selected.data.indenter.title}`, `Now with ${selected.holder ? selected.people[selected.holder].name : 'nobody'}`],
       heading: 'Move it to', groups, btn: 'Reroute', remPh: 'Optional reason.',
-      onSubmit: async (v) => { await doAction(selected.id, 'reroute', v); toast('Indent rerouted (preview only)'); },
+      onSubmit: async (v) => { await doAction(selected.id, 'reroute', v); setSelected(await getIndent(selected.id)); listIndents().then(setRows); toast('Indent rerouted'); },
     });
   }
   function startDelete() {
     setDialog({
       title: 'Delete this indent', lines: [`${selected.no} · ${selected.data.indenter.title}`, 'This removes it for everyone and cannot be undone.'],
       danger: true, btn: 'Delete',
-      onSubmit: async (v) => { await doAction(selected.id, 'delete', v); toast('Indent deleted (preview only)'); },
+      onSubmit: async (v) => { await doAction(selected.id, 'delete', v); setSelected(null); listIndents().then(setRows); toast('Indent deleted'); },
     });
   }
 

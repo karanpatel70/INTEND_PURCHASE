@@ -8,7 +8,7 @@ const lists = {
     'CSE', 'ECE', 'ME', 'EE', 'CE', 'Chemical', 'Physics', 'Mathematics',
     'BME', 'Accounts', 'Purchase', 'Registrar office', 'IT',
   ],
-  budget_head: [
+  budgetHead: [
     'Departmental grant, CSE', 'Research grant, SERB project', 'Institute equipment fund',
     'Consumables head, CSE lab', 'Departmental grant, ECE', 'Departmental grant, ME',
     'Departmental grant, EE', 'Departmental grant, CE', 'Departmental grant, Chemical',
@@ -19,7 +19,7 @@ const lists = {
     'Research Associate', 'Technical Superintendent', 'Administrative Officer',
     'Junior Assistant', 'Senior Assistant',
   ],
-  delivery_period: ['1 week', '2 weeks', '3 weeks', '4 weeks', '6 weeks', '1 month', '2 months', '3 months'],
+  deliveryPeriod: ['1 week', '2 weeks', '3 weeks', '4 weeks', '6 weeks', '1 month', '2 months', '3 months'],
 };
 
 try {
@@ -68,7 +68,21 @@ try {
     },
   });
 
-  console.log(`Seeded dropdown lists and administrator ${admin.email}.`);
+  // The price limits. A limit is never edited later: the Admin adds a NEW row with a later start date.
+  const limits = [
+    { formCode: 'SPS-101', rule: 'non-GeM', amount: 100000 },
+    { formCode: 'SPS-101', rule: 'GeM', amount: 50000 },
+    { formCode: 'SPS-101(R)', rule: 'all', amount: 200000 },
+  ];
+  for (const l of limits) {
+    const exists = await prisma.formLimit.findFirst({ where: { formCode: l.formCode, rule: l.rule } });
+    if (exists) continue;
+    await prisma.formLimit.create({
+      data: { ...l, effectiveFrom: new Date('2024-04-01T00:00:00.000Z'), reason: 'Initial limit', createdById: admin.id },
+    });
+  }
+
+  console.log(`Seeded dropdown lists, price limits and administrator ${admin.email}.`);
 } catch (error) {
   console.error('Database seed failed:', error);
   process.exitCode = 1;

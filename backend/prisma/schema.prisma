@@ -64,6 +64,8 @@ model FormTemplate {
   version      Int      @default(1)
   name         String
   workflowCode String
+  note         String?
+  printLayout  String?
   limit        Json?
   sections     Json
   active       Boolean  @default(true)
@@ -133,6 +135,8 @@ model IndentHistory {
   fromStage String
   toStage   String
   remark    String?
+  text      String?
+  kind      String?
   at        DateTime @default(now())
 
   @@index([indentId], map: "IndentHistory_indent")

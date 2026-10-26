@@ -68,7 +68,7 @@ export default function FillSection() {
       return setTimeout(() => document.querySelector('.field.bad')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
     }
     await doAction(id, 'fill', { section: key, values });
-    navigate(`/indents/${id}`, { state: { toast: `${SECTION_NAMES[key]} section checked (preview only, nothing is saved yet)` } });
+        navigate(`/indents/${id}`, { state: { toast: `${SECTION_NAMES[key]} section saved` } });
   }
 
   const locked = (k) => (

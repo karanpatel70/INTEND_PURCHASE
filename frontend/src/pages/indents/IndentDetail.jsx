@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useLists } from '../../hooks/useLists.js';
 import { useFormTemplate } from '../../hooks/useFormTemplate.js';
@@ -11,16 +11,18 @@ import { SectionView } from '../../components/forms/FormRenderer.jsx';
 import PasswordDialog from '../../components/ui/PasswordDialog.jsx';
 import StatusChip, { Chip } from '../../components/ui/StatusChip.jsx';
 import Stepper from '../../components/ui/Stepper.jsx';
+import HistoryList from '../../components/ui/HistoryList.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Icon from '../../components/ui/Icon.jsx';
 
-// Owner: Karan. One indent: header, progress, three tabs (Form details / Documents / History)
+//One indent: header, progress, three tabs (Form details / Documents / History)
 // and, on the right, the box with the five buttons (Approve, Forward, Fill form, Revise, Reject).
-// Documents and History are not built yet. The buttons open their dialogs but do not change the indent yet.
+// The buttons open their dialogs and call the real backend.
 export default function IndentDetail() {
   const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { state } = useLocation(); // a message sent by the page we came from, e.g. after Fill form
   const [lists] = useLists();
   const [indent, setIndent] = useState(null);
   const [tab, setTab] = useState('details');
@@ -28,6 +30,10 @@ export default function IndentDetail() {
   const [message, setMessage] = useState('');
   const pickable = useRef([]); // the people shown in the open dialog, to find the name that was picked
   const template = useFormTemplate(indent && indent.formCode);
+
+  useEffect(() => {
+    if (state && state.toast) { setMessage(state.toast); setTimeout(() => setMessage(''), 3600); }
+  }, []);
 
   useEffect(() => {
     setTab('details');
@@ -51,9 +57,10 @@ export default function IndentDetail() {
 
   // ---------- the five buttons ----------
   const summary = [<><b>{i.no}</b> · {d.title}</>, `Amount: ${inr(i.total)}`];
-  // runs when the dialog is confirmed. Nothing is saved yet: this only shows the message.
-  const done = (text) => async (values) => {
-    await doAction(i.id, 'preview', values);
+  // runs when the dialog is confirmed: does the real action, then reloads the indent
+  const done = (action, text) => async (values) => {
+    await doAction(i.id, action, values);
+    setIndent(await getIndent(id));
     toast(text(values.target));
   };
   const nameOf = (target) => pickable.current.find((p) => p.id === target)?.name || 'the selected person';
@@ -63,7 +70,7 @@ export default function IndentDetail() {
     if (kind === 'approve' && st.approve.generate) {
       return setDialog({
         title: 'Generate purchase order', lines: [...summary, 'A purchase order number is created and the indent is completed.'],
-        btn: 'Generate PO', gold: true, remPh: 'Optional note for the record.', onSubmit: done(() => 'Purchase order generated (preview only)'),
+        btn: 'Generate PO', gold: true, remPh: 'Optional note for the record.', onSubmit: done('approve', () => 'Purchase order generated'),
       });
     }
     if (kind === 'approve') {
@@ -71,7 +78,7 @@ export default function IndentDetail() {
       pickable.current = t.groups.flatMap((g) => g.people);
       return setDialog({
         title: st.approve.title, lines: summary, heading: 'Send to', groups: t.groups, prefer: t.prefer, btn: st.approve.label || 'Approve',
-        gold: true, onSubmit: done((target) => `Sent to ${nameOf(target)} (preview only)`),
+        gold: true, onSubmit: done('approve', (target) => `Sent to ${nameOf(target)}`),
       });
     }
     if (kind === 'forward') {
@@ -79,7 +86,7 @@ export default function IndentDetail() {
       pickable.current = t.groups.flatMap((g) => g.people);
       return setDialog({
         title: 'Forward', lines: [...summary, 'They can fill their section or pass it further down. It comes back to you.'],
-        heading: 'Forward to', groups: t.groups, prefer: t.prefer, btn: 'Forward', onSubmit: done((target) => `Forwarded to ${nameOf(target)} (preview only)`),
+        heading: 'Forward to', groups: t.groups, prefer: t.prefer, btn: 'Forward', onSubmit: done('forward', (target) => `Forwarded to ${nameOf(target)}`),
       });
     }
     if (kind === 'revise') {
@@ -88,14 +95,14 @@ export default function IndentDetail() {
       return setDialog({
         title: 'Revise: send back for correction', lines: summary, heading: 'Send back to anyone earlier in the path', groups: t.groups,
         needRem: true, remErr: 'Tell them what to change.', remPh: 'What needs to be corrected?', btn: 'Send back',
-        onSubmit: done((target) => `Sent back to ${nameOf(target)} (preview only)`),
+        onSubmit: done('revise', (target) => `Sent back to ${nameOf(target)}`),
       });
     }
     if (kind === 'reject') {
       return setDialog({
         title: 'Reject this indent', lines: [...summary, 'The indenter will see the rejection and your reason.'],
         needRem: true, remErr: 'Give the reason for rejecting.', remPh: 'Why is this indent rejected?', danger: true, btn: 'Reject',
-        onSubmit: done(() => 'Indent rejected (preview only)'),
+        onSubmit: done('reject', () => 'Indent rejected'),
       });
     }
   }
@@ -237,8 +244,36 @@ export default function IndentDetail() {
               )}
             </>
           )}
-          {tab === 'docs' && <div className="card pad muted">Documents: coming soon.</div>}
-          {tab === 'history' && <div className="card pad muted">History: coming soon.</div>}
+          {tab === 'docs' && (
+            <div className="card">
+              <div className="sechead" style={{ margin: '14px 18px 0' }}>Attached by the indenter</div>
+              <ul className="docs">
+                {(d.docs || []).map((f) => (
+                  <li key={f.n}>
+                    <div className="ico"><Icon name="file" size={18} /></div>
+                    <div className="grow"><b>{f.n}</b><div className="xs muted">{f.s} · added by {i.people[f.by] ? i.people[f.by].name : 'the indenter'}</div></div>
+                  </li>
+                ))}
+                {!(d.docs || []).length && <li className="muted">No files were attached.</li>}
+              </ul>
+              <div className="sechead" style={{ margin: '4px 18px 0' }}>Made by the system</div>
+              <ul className="docs">
+                <li>
+                  <div className="ico"><Icon name="print" size={18} /></div>
+                  <div className="grow"><b>{i.stage === 'DONE' ? 'Final record' : 'Form preview'}</b><div className="xs muted">{i.no} · {i.formCode}</div></div>
+                  {!isDead(i) && <Link className="btn sec sm" to={`/indents/${i.id}/preview`}>View</Link>}
+                </li>
+                {i.data.po && (
+                  <li>
+                    <div className="ico"><Icon name="print" size={18} /></div>
+                    <div className="grow"><b>Purchase order {i.po || ''}</b><div className="xs muted">Letter to the supplier</div></div>
+                    {!isDead(i) && <Link className="btn sec sm" to={`/indents/${i.id}/preview?kind=po`}>View</Link>}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+          {tab === 'history' && <HistoryList history={i.history} people={i.people} />}
         </div>
 
         <aside className="panel">{panel()}</aside>

@@ -8,7 +8,7 @@ import Button from '../../components/ui/Button.jsx';
 import { Chip } from '../../components/ui/StatusChip.jsx';
 import Icon from '../../components/ui/Icon.jsx';
 
-// Owner: Sujeet. Admin: all users. Pick one on the left to change role, department or designation,
+// Admin: all users. Pick one on the left to change role, department or designation,
 // or to authorise, block or decline. Saving is a preview for now: it shows a message only.
 const STATUS_TONE = { authorised: 'green', pending: 'amber', blocked: 'red', declined: 'gray' };
 
@@ -32,9 +32,10 @@ export default function AdminUsers() {
   const groups = ROLE_ORDER.map((label) => ({ label, people: shown.filter((u) => roleLabel(u) === label) })).filter((g) => g.people.length);
   const waiting = users.filter((u) => u.status === 'pending').length;
 
-  async function change(id, changes, text) {
+   async function change(id, changes, text) {
     await saveUser(id, changes);
-    toast(text + ' (preview only)');
+    setUsers(await listUsers());
+    toast(text);
   }
 
   return (
@@ -87,7 +88,7 @@ export default function AdminUsers() {
           )}
         </div>
       </div>
-      {adding && <AddUserDialog lists={lists} onClose={() => setAdding(false)} onDone={() => { setAdding(false); toast('User added (preview only)'); }} />}
+      {adding && <AddUserDialog lists={lists} onClose={() => setAdding(false)} onDone={async () => { setAdding(false); setUsers(await listUsers()); toast('User added'); }} />}
       {message && <div className="toast"><Icon name="check" size={18} />{message}</div>}
     </>
   );

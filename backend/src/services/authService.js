@@ -68,12 +68,18 @@ export async function departmentId(db, name) {
 }
 
 // ---------- login ----------
-export async function checkLogin(userId, password) {
-  const row = await prisma.user.findUnique({ where: { id: toId(userId) } });
-  if (!row) throw new HttpError(400, 'Choose a user from the list.');
+export async function checkLogin(email, password) {
+  let mail = String(email || '').trim().toLowerCase();
+  if (mail && !mail.includes('@')) mail += '@iitrpr.ac.in'; // "rohit.m" is enough
+  const row = await prisma.user.findUnique({ where: { email: mail } });
+
+  // One message for "no such email" and "wrong password", so nobody can find out which emails exist.
+  if (!row || !(await checkPassword(password || '', row.passwordHash))) {
+    throw new HttpError(401, 'Wrong email or password.');
+  }
   if (row.status === 'pending') throw new HttpError(403, 'This account is waiting for Admin approval.');
   if (row.status === 'blocked') throw new HttpError(403, 'This account is blocked. Contact the Admin.');
-  if (!(await checkPassword(password || '', row.passwordHash))) throw new HttpError(401, 'Wrong password.');
+
   const user = await getApiUser(row.id);
   return { token: signToken(row), user };
 }
