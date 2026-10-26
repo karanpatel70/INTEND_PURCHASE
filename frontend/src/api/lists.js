@@ -1,5 +1,4 @@
-// Owner: Manvendra. Dropdown lists (departments, budget heads, designations, delivery periods).
-import { api, USE_MOCKS } from './client.js';
-import { lists } from '../mocks/lists.js';
+//Dropdown lists (departments, budget heads, designations, delivery periods).
+import { api } from './client.js';
 
-export const getLists = async () => (USE_MOCKS ? lists : api('/lists'));
+export const getLists = () => api('/lists');

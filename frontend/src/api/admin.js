@@ -1,21 +1,13 @@
+import { api } from './client.js';
 
-import { api, USE_MOCKS } from './client.js';
-import { users } from '../mocks/users.js';
-import { roleLabel } from '../utils/roles.js';
+export const listUsers = () => api('/admin/users');
 
-export async function listUsers() {
-  if (USE_MOCKS) return users.map((u) => ({ ...u, roleLabel: roleLabel(u) }));
-  return api('/admin/users');
-}
+// changes = { role, dept, desig, status }. Use id 'new' to create a user.
+export const saveUser = (id, changes) => api(`/admin/users/${id}`, { method: 'PUT', body: changes });
 
-// changes = { role, dept, desig, status }
-export async function saveUser(id, changes) {
-  if (USE_MOCKS) return { ok: true };
-  return api(`/admin/users/${id}`, { method: 'PUT', body: changes });
-}
+// A limit is never edited: this adds a NEW row that starts today. { formCode, rule, amount, reason, effectiveFrom }
+export const addLimit = (body) => api('/admin/limits', { method: 'POST', body });
 
-// A limit is never edited: this adds a NEW row that starts today. { formCode, rule, amount, reason }
-export async function addLimit(body) {
-  if (USE_MOCKS) return { ok: true };
-  return api('/admin/limits', { method: 'POST', body });
-}
+// dropdown lists
+export const addListItem = (list, value) => api('/admin/lists', { method: 'POST', body: { list, value } });
+export const removeListItem = (list, value) => api(`/admin/lists/${encodeURIComponent(list)}/${encodeURIComponent(value)}`, { method: 'DELETE' });
