@@ -12,6 +12,9 @@ import Field from '../../components/ui/Field.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Icon from '../../components/ui/Icon.jsx';
 
+// Owner: Rahul. Purchase orders after they are issued: progress, extension, delivery, cancellation.
+// Purchase staff see every order and can extend, deliver or cancel. An indenter sees only their own, read-only.
+// The three actions are a preview for now: they check the form and show a message.
 export default function OrdersList() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -23,7 +26,7 @@ export default function OrdersList() {
   const [message, setMessage] = useState('');
   const mine = !isPurchase(user);
 
-  useEffect(() => { listOrders().then(setOrders); }, [user]);
+  useEffect(() => { listOrders(user).then(setOrders); }, [user]);
   const toast = (text) => { setMessage(text); setTimeout(() => setMessage(''), 3600); };
 
   const all = orders.map((o) => ({ o, info: ordInfo(o) }));
@@ -119,13 +122,70 @@ export default function OrdersList() {
           lines={[`${dialog.order.po} · ${dialog.order.title}`, `Supplier: ${dialog.order.vendor}`]}
           onSubmit={async (v) => {
             await deliverOrder(dialog.order.id, v.remarks, v.password);
-            toast(`${dialog.order.po} marked as delivered`);
+            toast(`${dialog.order.po} marked as delivered (preview only)`);
           }}
           onClose={() => setDialog(null)}
         />
       )}
       {message && <div className="toast"><Icon name="check" size={18} />{message}</div>}
     </>
+  );
+}
+
+// "Extend or cancel the order": pick a new delivery date, or cancel the order with a reason.
+function ExtendDialog({ order, periods, onClose, onDone }) {
+  const [choice, setChoice] = useState(periods[0] || 'Pick a date'); // a period, "Pick a date" or "Order cancelled"
+  const [date, setDate] = useState('');
+  const [reason, setReason] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const cancelling = choice === 'Order cancelled';
+  const picking = choice === 'Pick a date';
+
+  async function submit() {
+    const e = {};
+    if (picking && !(date && date > todayStr())) e.date = 'Choose a date after today.';
+    if (cancelling && !reason.trim()) e.reason = 'Give a reason for cancelling the order.';
+    if (!password) e.pw = 'Enter your password to confirm.';
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    const newDate = picking ? date : presetDate(todayStr(), choice);
+    if (cancelling) await cancelOrder(order.id, reason.trim(), password);
+    else await extendOrder(order.id, newDate, reason.trim(), password);
+    onDone(cancelling ? `${order.po} is cancelled (preview only)` : `Delivery moved to ${dstr(newDate)} (preview only)`);
+  }
+
+  return (
+    <Modal
+      title="Extend or cancel the order" onClose={onClose}
+      footer={<><Button variant="sec" onClick={onClose}>Close</Button><Button variant={cancelling ? 'danger' : 'gold'} onClick={submit}>{cancelling ? 'Cancel the order' : 'Extend delivery'}</Button></>}
+    >
+      <div className="sum">
+        <div><b>{order.po}</b> · {order.title}</div>
+        <div>Supplier: {order.vendor}</div>
+        <div>Was due on {dstr(order.byDate)}</div>
+      </div>
+      <Field label="New delivery date" htmlFor="choice">
+        <select id="choice" className="sel" value={choice} onChange={(e) => setChoice(e.target.value)}>
+          {periods.map((p) => <option key={p} value={p}>{p} from today ({dstr(presetDate(todayStr(), p))})</option>)}
+          <option value="Pick a date">Pick a date</option>
+          <option value="Order cancelled">Order cancelled</option>
+        </select>
+      </Field>
+      {picking && (
+        <Field label="Pick the new date" error={errors.date} htmlFor="date">
+          <input id="date" className="inp" type="date" min={addDays(todayStr(), 1)} value={date} onChange={(e) => setDate(e.target.value)} />
+        </Field>
+      )}
+      {cancelling && <div className="alert warn mb16"><Icon name="info" size={18} /><span>The order will be closed and marked as cancelled. Give the reason below.</span></div>}
+      <Field label={cancelling ? 'Reason for cancelling (required)' : 'Reason for the extension (optional)'} error={errors.reason} htmlFor="reason">
+        <textarea id="reason" className="txt" placeholder={cancelling ? 'Why is this order being cancelled?' : 'e.g. Supplier stock delayed.'} value={reason} onChange={(e) => setReason(e.target.value)} />
+      </Field>
+      <Field label="Your password" error={errors.pw} htmlFor="pw">
+        <input id="pw" className="inp" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </Field>
+    </Modal>
   );
 }
 
