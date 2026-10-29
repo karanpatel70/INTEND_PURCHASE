@@ -33,6 +33,8 @@ try {
         update: {
           name: form.name,
           workflowCode: form.workflowCode,
+          note: form.note || null,
+          printLayout: form.printLayout || null,
           limit: form.limit,
           sections: form.sections,
           active: true,
@@ -42,6 +44,8 @@ try {
           version: form.version,
           name: form.name,
           workflowCode: form.workflowCode,
+          note: form.note || null,
+          printLayout: form.printLayout || null,
           limit: form.limit,
           sections: form.sections,
         },

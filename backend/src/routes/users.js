@@ -1,8 +1,12 @@
 import { Router } from 'express';
+import { wrap } from '../middleware/errorHandler.js';
+import { requireLogin } from '../middleware/auth.js';
+import { listApiUsers } from '../services/authService.js';
 
-// Owner: Manvendra. Endpoints are listed in the team guide, section 4.
 const router = Router();
 
-router.get('/', (req, res) => res.status(501).json({ error: 'Not built yet' }));
+router.get('/', requireLogin, wrap(async (req, res) => {
+  res.json(await listApiUsers(undefined, { status: 'active' }));
+}));
 
 export default router;

@@ -1,39 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { listLoginUsers } from '../../api/auth.js';
-import { ROLE_ORDER, emailLocal } from '../../utils/roles.js';
 import Icon from '../../components/ui/Icon.jsx';
 import Field from '../../components/ui/Field.jsx';
 
-
+// Sign in with the college email and the password.
 export default function Login() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    listLoginUsers().then(setUsers).catch(() => {});
-  }, []);
 
   if (user) return <Navigate to="/" replace />;
 
   async function submit(e) {
     e.preventDefault();
-    if (!userId) return setError('Choose a user from the list.');
+    if (!email.trim()) return setError('Enter your college email.');
+    if (!password) return setError('Enter your password.');
     try {
-      await login(userId, password);
+      await login(email.trim(), password);
       navigate('/');
     } catch (err) {
       setError(err.message);
     }
   }
-
-  // group the users by role, in the usual order
-  const roleNames = [...ROLE_ORDER, ...new Set(users.map((u) => u.roleLabel).filter((r) => !ROLE_ORDER.includes(r)))];
 
   return (
     <div className="loginwrap">
@@ -43,24 +34,11 @@ export default function Login() {
           <div><b>Purchase Indent System</b><span>IIT Ropar, Stores and Purchase</span></div>
         </div>
         <h2>Sign in</h2>
-        <p className="muted small" style={{ margin: '4px 0 18px' }}>Pick your name from the list.</p>
+        <p className="muted small" style={{ margin: '4px 0 18px' }}>Use your IIT Ropar email and password.</p>
         {error && <div className="alert bad mb16" role="alert"><Icon name="info" size={18} /><span>{error}</span></div>}
         <form onSubmit={submit} noValidate>
-          <Field label="User" htmlFor="user">
-            <select id="user" className="sel" value={userId} onChange={(e) => setUserId(e.target.value)}>
-              <option value="">Select a user</option>
-              {roleNames.map((r) => {
-                const group = users.filter((u) => u.roleLabel === r).sort((a, b) => a.name.localeCompare(b.name));
-                if (!group.length) return null;
-                return (
-                  <optgroup key={r} label={r === 'Not assigned' ? 'Waiting for approval' : r}>
-                    {group.map((u) => (
-                      <option key={u.id} value={u.id}>{u.name} · {emailLocal(u.email)}{u.status !== 'authorised' ? ' (not active)' : ''}</option>
-                    ))}
-                  </optgroup>
-                );
-              })}
-            </select>
+          <Field label="Email" htmlFor="email">
+            <input id="email" className="inp" type="text" autoComplete="username" placeholder="name@iitrpr.ac.in" value={email} onChange={(e) => setEmail(e.target.value)} />
           </Field>
           <Field label="Password" htmlFor="pw">
             <input id="pw" className="inp" type="password" autoComplete="current-password" placeholder="Your password" value={password} onChange={(e) => setPassword(e.target.value)} />

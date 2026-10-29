@@ -6,7 +6,7 @@ import { printRegistry } from '../../components/print/printRegistry.js';
 import GenericPrint, { PODocument } from '../../components/print/GenericPrint.jsx';
 import Button from '../../components/ui/Button.jsx';
 
-// Owner: Rahul. Full-screen preview of the form (or the purchase order with ?kind=po). Print or save as PDF.
+// Full-screen preview of the form (or the purchase order with ?kind=po). Print or save as PDF.
 // A rejected or cancelled indent cannot be previewed or printed.
 export default function FormPreview() {
   const { id } = useParams();
