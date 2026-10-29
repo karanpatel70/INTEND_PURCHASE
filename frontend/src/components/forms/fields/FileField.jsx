@@ -1,25 +1,33 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import Field from '../../ui/Field.jsx';
 import Icon from '../../ui/Icon.jsx';
 import Button from '../../ui/Button.jsx';
-import { USE_MOCKS } from '../../../api/client.js';
+import { rememberFile, forgetFile } from '../../../api/attachments.js';
 
-// Attach files. The answer is a list of { n: name, s: size, by: user id }.
-// (Right now only the name and size are kept. The backend will store the real file later.)
+const MAX_BYTES = 10 * 1024 * 1024; 
+
+
 export default function FileField({ field, value, onChange, error, readOnly, className, ctx }) {
   const files = value || [];
   const input = useRef(null);
-  const add = (list) => onChange(field.name, [...files, ...list]);
+  const [note, setNote] = useState('');
 
   function onPick(e) {
-    add([...e.target.files].map((f) => ({ n: f.name, s: Math.max(1, Math.round(f.size / 1024)) + ' KB', by: ctx.user.id })));
+    const picked = [...e.target.files];
+    const tooBig = picked.filter((f) => f.size > MAX_BYTES);
+    const good = picked.filter((f) => f.size <= MAX_BYTES);
+    setNote(tooBig.length ? `${tooBig.map((f) => f.name).join(', ')}: over 10 MB, not added.` : '');
+    good.forEach(rememberFile);
+    onChange(field.name, [
+      ...files,
+      ...good.map((f) => ({ n: f.name, s: Math.max(1, Math.round(f.size / 1024)) + ' KB', b: f.size, by: ctx.user.id })),
+    ]);
     e.target.value = '';
   }
-  function addSample() {
-    const names = ['Quotation', 'Specification-sheet', 'GeM-report'];
-    add([{ n: `${names[files.length % 3]}${files.length >= 3 ? '-' + (files.length + 1) : ''}.pdf`, s: Math.round(60 + Math.random() * 300) + ' KB', by: ctx.user.id }]);
+  function remove(k) {
+    forgetFile(files[k]);
+    onChange(field.name, files.filter((_, x) => x !== k));
   }
-  const remove = (k) => onChange(field.name, files.filter((_, x) => x !== k));
 
   return (
     <Field label={null} error={error} className={className}>
@@ -31,11 +39,7 @@ export default function FileField({ field, value, onChange, error, readOnly, cla
           <input ref={input} type="file" multiple hidden onChange={onPick} />
         </div>
       )}
-      {!readOnly && USE_MOCKS && (
-        <div className="xs muted" style={{ marginTop: 6 }}>
-          No file at hand? <a className="mail" onClick={addSample}>Add a sample file</a> (demo only).
-        </div>
-      )}
+      {note && <div className="xs" style={{ marginTop: 6, color: '#b91c1c' }}>{note}</div>}
       <ul className="docs">
         {files.map((d, k) => (
           <li key={k}>
