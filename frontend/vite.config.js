@@ -7,5 +7,11 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@shared': fileURLToPath(new URL('../shared', import.meta.url)) } },
-  server: { fs: { allow: ['..'] } },
+  server: {
+    fs: { allow: ['..'] },
+    // lets the ngrok address open the site
+    allowedHosts: ['.ngrok-free.app', '.ngrok.app', '.ngrok.io'],
+    // anything starting with /api goes to your backend, so only ONE ngrok link is needed
+    proxy: { '/api': 'http://localhost:4000' },
+  },
 });
